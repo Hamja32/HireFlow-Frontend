@@ -5,6 +5,8 @@ import Jobs from "./pages/Jobs";
 
 import "./App.css";
 import Profile from "./pages/Profile";
+// import Navbar from "./components/Navbar";
+import CompanyDashboard from "./components/CompanyDashboard";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -14,6 +16,7 @@ function PrivateRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -24,7 +27,7 @@ export default function App() {
               <Jobs />
             </PrivateRoute>
           }
-        />
+          />
         <Route
           path="/profile"
           element={
@@ -32,7 +35,17 @@ export default function App() {
               <Profile />
             </PrivateRoute>
           }
-        />
+          />
+          import CompanyDashboard from "./pages/CompanyDashboard";
+
+<Route
+    path="/company/dashboard"
+    element={
+        <PrivateRoute>
+            <CompanyDashboard />
+        </PrivateRoute>
+    }
+/>
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>

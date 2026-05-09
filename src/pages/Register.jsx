@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
 export default function Register() {
+    const [loading,setLoading] = useState(false);
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -18,12 +19,15 @@ export default function Register() {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setLoading(true)
         try {
             await axiosInstance.post("/api/auth/register", form);
             console.log("Form data:", form); // ← ye add karo
             navigate("/login");
         } catch (err) {
             setError("Registration failed. Try again.");
+        }finally{
+            setLoading(false)
         }
     };
 
@@ -102,7 +106,7 @@ export default function Register() {
                         className="w-full bg-blue-600 text-white 
                             py-2 rounded-lg hover:bg-blue-700"
                     >
-                        Register
+                        {loading ? "Loading..." : "Register"}
                     </button>
                 </form>
 
