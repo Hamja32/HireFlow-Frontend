@@ -74,7 +74,23 @@ export default function CompanyDashboard() {
             alert("Failed to delete job.");
         }
     };
-
+const handleResumeDownload = async (email) => {
+    try {
+        const res = await axiosInstance.get(
+           `/api/company/resume?email=${email}`,
+            { responseType: "blob" }
+        );
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${email}_resume.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (err) {
+        alert("Resume not available!");
+    }
+};
     const handleUpdateJob = async (e) => {
         e.preventDefault();
         try {
@@ -275,38 +291,71 @@ export default function CompanyDashboard() {
                                     No applications found for this criteria.
                                 </div>
                             ) : (
-                                applications.map((app) => (
-                                    <div key={app.id} className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
-                                                {app.applicantName?.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-gray-800">{app.applicantName}</h3>
-                                                <p className="text-gray-500 text-sm">{app.applicantEmail}</p>
-                                                <div className="mt-1">
-                                                    <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-md ${getStatusColor(app.status)}`}>
-                                                        {app.status}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <label className="text-xs font-bold text-gray-400 uppercase">Update Status:</label>
-                                            <select 
-                                                value={app.status} 
-                                                onChange={(e) => handleStatusUpdate(app.id, e.target.value)} 
-                                                className="border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"
-                                            >
-                                                <option value="APPLIED">Applied</option>
-                                                <option value="SHORTLISTED">Shortlisted</option>
-                                                <option value="INTERVIEW">Interview</option>
-                                                <option value="OFFERED">Offered</option>
-                                                <option value="REJECTED">Rejected</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                ))
+                               applications.map((app) => (
+    <div key={app.id}
+        className="bg-white rounded-xl shadow-md p-6 
+            flex justify-between items-center">
+        <div>
+            <h3 className="text-lg font-bold">
+                {app.applicantName}
+            </h3>
+            <p className="text-gray-500 text-sm">
+                {app.applicantEmail}
+            </p>
+            <div className="flex items-center gap-2 mt-2">
+                <span className={`text-xs px-2 py-1 
+                    rounded-full font-medium 
+                    ${getStatusColor(app.status)}`}>
+                    {app.status}
+                </span>
+                {/* Resume Badge */}
+                {app.hasResume ? (
+                    <span className="text-xs px-2 py-1 
+                        rounded-full font-medium
+                        bg-emerald-50 text-emerald-600 
+                        border border-emerald-100">
+                        📄 Resume Available
+                    </span>
+                ) : (
+                    <span className="text-xs px-2 py-1 
+                        rounded-full font-medium
+                        bg-gray-50 text-gray-400 
+                        border border-gray-100">
+                        No Resume
+                    </span>
+                )}
+            </div>
+        </div>
+
+        <div className="flex flex-col gap-2 items-end">
+            {/* Resume Download */}
+            {app.hasResume && (
+                <button
+                    onClick={() => 
+                        handleResumeDownload(app.applicantEmail)}
+                    className="text-blue-600 text-sm font-medium 
+                        hover:text-blue-800 transition-colors"
+                >
+                    Download Resume ↓
+                </button>
+            )}
+
+            {/* Status Update */}
+            <select
+                value={app.status}
+                onChange={(e) =>
+                    handleStatusUpdate(app.id, e.target.value)}
+                className="border rounded-lg p-2 text-sm"
+            >
+                <option value="APPLIED">Applied</option>
+                <option value="SHORTLISTED">Shortlisted</option>
+                <option value="INTERVIEW">Interview</option>
+                <option value="OFFERED">Offered</option>
+                <option value="REJECTED">Rejected</option>
+            </select>
+        </div>
+    </div>
+))
                             )}
                         </div>
                     )}
