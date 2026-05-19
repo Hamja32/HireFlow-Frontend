@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'https://hireflow-production-0c66.up.railway.app/',
 });
 
 // Har request pe token automatically add hoga
